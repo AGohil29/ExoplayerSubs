@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">ExoplayerSubs</string>
+    <string name="media_url_mp3">http://storage.googleapis.com/exoplayer-test-media-0/play.mp3</string>
+    <string name="url_thumbnails">https://bitdash-a.akamaihd.net/content/MI201109210084_1/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.jpg</string>
+    <string name="media_url_mp4">http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4</string>
+    <string name="media_url_dash"><![CDATA[https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd]]></string>
+    <string name="url_smooth">http://playready.directtaps.net/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism</string>
+    <string name="url_hls">https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8</string>
+    <string name="subs_none">None</string>
+</resources>
