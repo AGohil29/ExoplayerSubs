@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Handler;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
@@ -70,4 +71,5 @@ public class ExoPlayerMediaSourceBuilder {
         return new DefaultHttpDataSourceFactory(Util.getUserAgent(context,
                 "ExoPlayerDemo"), bandwidthMeter);
     }
+
 }

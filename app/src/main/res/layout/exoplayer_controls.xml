@@ -92,6 +92,15 @@
             android:src="@drawable/ic_subtitle_on"
             android:visibility="gone"/>
 
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/settings"
+            android:src="@drawable/ic_settings"
+            android:background="@android:color/transparent"
+            android:tint="@android:color/white"
+            android:layout_weight="1"/>
+
     </LinearLayout>
 
 </LinearLayout>
