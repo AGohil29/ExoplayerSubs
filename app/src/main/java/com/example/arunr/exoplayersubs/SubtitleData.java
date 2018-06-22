@@ -6,5 +6,5 @@ package com.example.arunr.exoplayersubs;
 
 public class SubtitleData {
 
-    public static String[] languages = {"None", "English", "हिन्दी", "मराठी"};
+    public static String[] languages = {"None", "English", "Spanish", "French"};
 }

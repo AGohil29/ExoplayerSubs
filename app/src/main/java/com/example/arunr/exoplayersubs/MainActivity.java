@@ -96,8 +96,12 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         if (playerView != null && playerView.getSubtitleView() != null)
             if (show) {
                 playerView.getSubtitleView().setVisibility(View.VISIBLE);
+                subtitleBtnOn.setVisibility(View.VISIBLE);
+                subtitleBtnOff.setVisibility(View.GONE);
             } else {
                 playerView.getSubtitleView().setVisibility(View.GONE);
+                subtitleBtnOn.setVisibility(View.GONE);
+                subtitleBtnOff.setVisibility(View.VISIBLE);
             }
     }
 
@@ -140,13 +144,14 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     // method to toggle subtitles on and off
     public void onClick(View view) {
         if (playerView != null && subtitleBtnOn.getVisibility() == View.GONE) {
+            initializePlayer();
+            MediaSource subtitleSourceEng = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt"),
+                    dataSourceFactory, format, C.TIME_UNSET);
+            mergedSource = new MergingMediaSource(videoSource, subtitleSourceEng);
+            player.prepare(mergedSource, false, false);
             showSubtitle(true);
-            subtitleBtnOn.setVisibility(View.VISIBLE);
-            subtitleBtnOff.setVisibility(View.GONE);
         } else {
             showSubtitle(false);
-            subtitleBtnOff.setVisibility(View.VISIBLE);
-            subtitleBtnOn.setVisibility(View.GONE);
         }
         //AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //builder.setTitle("Subtitles")
