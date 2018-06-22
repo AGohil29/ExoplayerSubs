@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private void showSelectedSubtitle() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
 
-        // To align the title in center
+        /*// To align the title in center
         TextView title = new TextView(this);
         // You Can Customise your Title here
         title.setText("Subtitles");
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         //title.setTextColor(Color.WHITE);
         title.setTextSize(20);
 
-        builder.setCustomTitle(title);
+        builder.setCustomTitle(title);*/
 
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         View view = inflater.inflate(R.layout.track_selection_dialog, null);

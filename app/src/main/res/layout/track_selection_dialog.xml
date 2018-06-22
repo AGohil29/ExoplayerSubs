@@ -5,6 +5,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/track_selection_dialog_heading"
+        android:text="Subtitles"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:padding="16dp"
+        android:textColor="#ffa500"/>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:padding="16dp"
+        android:background="#ffa500"
+        android:paddingTop="32dp" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -21,12 +39,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Subs Settings"
+            android:background="@android:color/transparent"
             android:layout_weight="1"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnOk"
             android:text="OK"
+            android:background="@android:color/transparent"
             android:layout_weight="1"/>
 
     </LinearLayout>

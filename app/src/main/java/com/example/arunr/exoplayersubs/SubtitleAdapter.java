@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +62,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView subtitleLang;
-        public ImageView subsSelected;
+        public CheckBox subsSelected;
         public int subtitleLanguageSelected;
 
         public MyViewHolder(View view) {
