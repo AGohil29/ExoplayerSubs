@@ -3,6 +3,8 @@ package com.example.arunr.exoplayersubs;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -19,7 +21,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -38,6 +42,7 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextRenderer;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -77,9 +82,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private int streamType;
     private Handler mainHandler = new Handler();
 
-    // Options for subtitles
-    private CharSequence languages[] = new CharSequence[]{"None", "English", "हिन्दी", "मराठी"};
-
     private ArrayList<SubtitleList> subtitleData = new ArrayList<SubtitleList>();
     private RecyclerView recyclerView;
     private SubtitleAdapter subsAdapter;
@@ -87,10 +89,18 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private Format format;
-    private int position = 0;
     private EventLogger eventLogger;
     private Player.EventListener eventListener;
+    private MergingMediaSource mergedSource;
     private MediaSource videoSource;
+    private CaptionStyleCompat captionStyleCompat;
+    // for subtitles text size
+    private TextView subsSize1, subsSize2, subsSize3, subsSize4, subsSize5;
+    // for subtitles background
+    private TextView subsBlackBackground, subsGrayBackground, subsTransparentBackground, subsWhiteBackground;
+    private SubtitleList subtitles;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
 
     public void showSubtitle(boolean show) {
         if (playerView != null && playerView.getSubtitleView() != null)
@@ -115,6 +125,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         subtitleView = findViewById(R.id.exo_subtitles);
         subtitleBtnOn = findViewById(R.id.subs_on);
         subtitleBtnOff = findViewById(R.id.subs_off);
+
+        prefs = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        editor = prefs.edit();
 
         // settings btn include multiple subtitle settings
         settingsBtn = findViewById(R.id.settings);
@@ -198,8 +211,18 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        String subs[] = {"None", "English", "Spanish", "French"};
+        if (subtitleData != null && subtitleData.size() < subs.length) {
+            //for (int i = 0; i < subs.length; i++)
+            for (String sub : subs) {
+                subtitles = new SubtitleList();
+                subtitles.setSubtitleLanguage(sub);
+                this.subtitleData.add(subtitles);
+            }
+        }
         // adds subs data only once
-        if (subtitleData != null && subtitleData.size() < SubtitleData.languages.length) {
+        /*if (subtitleData != null && subtitleData.size() < SubtitleData.languages.length) {
             // list of different subtitle languages
             for (int i = 0; i < SubtitleData.languages.length; i++) {
                 if (subtitleData != null && i < languages.length)
@@ -207,30 +230,32 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                             SubtitleData.languages[i]
                     ));
             }
-        }
+        }*/
         subsAdapter = new SubtitleAdapter(subtitleData);
         recyclerView.setAdapter(subsAdapter);
         subsAdapter.notifyDataSetChanged();
         subsAdapter.setOnItemClickListener(new SubtitleAdapter.onRecyclerViewItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position) {
+                //Todo if view is clicked its related checkbox is checked
                 if (position == 0) {
                     initializePlayer();
-                    player.prepare(videoSource, false, true);
+                    // you can pass single or multiple sources but not null
+                    // if null is passed it crashes
+                    mergedSource = new MergingMediaSource(videoSource);
                     showSubtitle(false);
                 } else if (position == 1) {
                     initializePlayer();
                     MediaSource subtitleSourceEng = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt"),
                             dataSourceFactory, format, C.TIME_UNSET);
                     mergedSource = new MergingMediaSource(videoSource, subtitleSourceEng);
-                    player.prepare(mergedSource, false, true);
                     showSubtitle(true);
+
                 } else if (position == 2) {
                     initializePlayer();
                     MediaSource subtitleSourceSp = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-es.srt"),
                             dataSourceFactory, format, C.TIME_UNSET);
                     mergedSource = new MergingMediaSource(videoSource, subtitleSourceSp);
-                    player.prepare(mergedSource, false, true);
                     showSubtitle(true);
                 } else {
                     initializePlayer();
@@ -238,10 +263,11 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                             dataSourceFactory, format, C.TIME_UNSET);
 
                     mergedSource = new MergingMediaSource(videoSource, subtitleSourceFr);
-                    player.prepare(mergedSource, false, true);
                     showSubtitle(true);
                 }
+                player.prepare(mergedSource, false, true);
             }
+
         });
 
         btnOk.setOnClickListener(new View.OnClickListener() {
@@ -271,15 +297,110 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         alertDialog.show();
 
         ImageButton btnBack = view.findViewById(R.id.btn_back);
+        Button btnOk = view.findViewById(R.id.subtitle_settings_dialog_btnOk);
 
         // show the 1st dialog again on back pressed
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                alertDialog.dismiss();
                 showSelectedSubtitle();
             }
         });
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
 
+        // setting subtitles text size
+        subsSize1 = view.findViewById(R.id.subs_size_1);
+        subsSize2 = view.findViewById(R.id.subs_size_2);
+        subsSize3 = view.findViewById(R.id.subs_size_3);
+        subsSize4 = view.findViewById(R.id.subs_size_4);
+        subsSize5 = view.findViewById(R.id.subs_size_5);
+
+        subsSize1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.8f);
+            }
+        });
+
+        subsSize2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.9f);
+            }
+        });
+
+        subsSize3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.0f);
+            }
+        });
+
+        subsSize4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.1f);
+            }
+        });
+
+        subsSize5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.2f);
+            }
+        });
+
+        // setting subtitles background and font color
+        subsBlackBackground = view.findViewById(R.id.format_black);
+        subsGrayBackground = view.findViewById(R.id.format_light_grey);
+        subsTransparentBackground = view.findViewById(R.id.format_transparent);
+        subsWhiteBackground = view.findViewById(R.id.format_white);
+
+        // sets black background and white text color for subtitles
+        subsBlackBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.BLACK, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
+        });
+
+        // sets gray background and white text color for subtitles
+        subsGrayBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.LTGRAY, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
+        });
+
+        // sets transparent background and yellow text color for subtitles
+        subsTransparentBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                captionStyleCompat = new CaptionStyleCompat(Color.YELLOW, Color.TRANSPARENT, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
+        });
+
+        // sets white background and black text color for subtitles
+        subsWhiteBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                captionStyleCompat = new CaptionStyleCompat(Color.BLACK, Color.WHITE, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
+        });
     }
 
     @Override
@@ -416,12 +537,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         }
     }
 
-    MergingMediaSource mergedSource;
-
-    public void setSubtitle(int position) {
-        this.position = position;
-        initializePlayer();
-    }
 
     private class PlayerEventListener extends Player.DefaultEventListener {
         @Override

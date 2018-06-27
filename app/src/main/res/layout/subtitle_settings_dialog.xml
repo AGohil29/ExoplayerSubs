@@ -4,15 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="#696969">
 
     <ImageButton
         android:id="@+id/btn_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:background="@android:color/transparent"
-        android:padding="4dp"
+        android:padding="16dp"
         android:src="@drawable/ic_arrow_back"
         android:tint="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,15 +21,13 @@
         android:id="@+id/second_dialog_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:padding="4dp"
+        android:padding="16dp"
         android:text="Subtitles Settings"
         android:textAlignment="textStart"
         android:textColor="@android:color/white"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintBottom_toTopOf="@+id/linear_layout_size"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/btn_back"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,88 +35,89 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_margin="8dp"
         android:background="@android:color/darker_gray"
-        android:paddingTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/second_dialog_header" />
+        app:layout_constraintTop_toBottomOf="@+id/second_dialog_header" />
 
     <LinearLayout
         android:id="@+id/linear_layout_size"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="4dp"
         android:orientation="horizontal"
-        android:padding="4dp"
-        app:layout_constraintTop_toBottomOf="@id/view">
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/second_dialog_header">
 
         <TextView
             android:id="@+id/second_dialog_size"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
+            android:layout_margin="4dp"
             android:layout_weight="1"
-            android:padding="4dp"
+            android:padding="8dp"
             android:text="Size"
             android:textColor="@android:color/white"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/second_dialog_size_8sp"
+            android:id="@+id/subs_size_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:padding="4dp"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="10sp" />
-
-        <TextView
-            android:id="@+id/second_dialog_size_10sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:padding="4dp"
+            android:layout_margin="4dp"
+            android:background="#696969"
+            android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/second_dialog_size_12sp"
+            android:id="@+id/subs_size_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:padding="4dp"
+            android:layout_margin="4dp"
+            android:background="#696969"
+            android:padding="8dp"
+            android:text="Aa"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/subs_size_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:background="#696969"
+            android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/second_dialog_size_14sp"
+            android:id="@+id/subs_size_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:outlineProvider="@android:color/white"
-            android:padding="4dp"
+            android:layout_margin="4dp"
+            android:background="#696969"
+            android:padding="8dp"
+            android:text="Aa"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/subs_size_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:background="#696969"
+            android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
             android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/second_dialog_size_16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:padding="4dp"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
 
     </LinearLayout>
 
@@ -127,80 +125,85 @@
         android:id="@+id/view1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_margin="8dp"
         android:background="@android:color/darker_gray"
-        android:padding="4dp"
-        android:paddingTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear_layout_size" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout_size" />
 
     <LinearLayout
         android:id="@+id/linear_layout_format"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="4dp"
         android:orientation="horizontal"
         android:padding="4dp"
-        app:layout_constraintTop_toBottomOf="@id/view1">
+        app:layout_constraintTop_toBottomOf="@id/linear_layout_size">
 
         <TextView
             android:id="@+id/second_dialog_format"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="4dp"
             android:layout_weight="1"
-            android:padding="4dp"
+            android:background="#696969"
+            android:padding="8dp"
             android:text="Format"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/format_black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
+            android:layout_margin="4dp"
             android:background="@android:color/black"
-            android:padding="4dp"
+            android:padding="8dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/format_light_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
+            android:layout_margin="4dp"
             android:background="@android:color/darker_gray"
-            android:padding="4dp"
+            android:padding="8dp"
+            android:focusable="false"
+            android:focusableInTouchMode="true"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/format_transparent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:background="@android:color/transparent"
-            android:padding="4dp"
+            android:layout_margin="4dp"
+            android:background="#696969"
+            android:padding="8dp"
+            android:focusable="false"
+            android:focusableInTouchMode="true"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/format_white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
+            android:layout_margin="4dp"
             android:background="@android:color/white"
-            android:padding="4dp"
+            android:padding="8dp"
+            android:focusable="false"
+            android:focusableInTouchMode="true"
             android:text="Aa"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -208,25 +211,21 @@
         android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_margin="8dp"
         android:background="@android:color/darker_gray"
-        android:padding="4dp"
-        android:paddingTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear_layout_format" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout_format" />
 
     <Button
         android:id="@+id/subtitle_settings_dialog_btnOk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:background="@android:color/transparent"
+        android:background="#696969"
         android:padding="4dp"
         android:text="OK"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view2" />
+        app:layout_constraintTop_toBottomOf="@id/linear_layout_format" />
 
 
 </android.support.constraint.ConstraintLayout>

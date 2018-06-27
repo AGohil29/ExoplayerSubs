@@ -10,6 +10,7 @@ import android.widget.ImageView;
 public class SubtitleList {
 
     private String subtitleLanguage;
+    private boolean checked;
 
     public SubtitleList() {
 
@@ -25,5 +26,13 @@ public class SubtitleList {
 
     public void setSubtitleLanguage(String subtitleLanguage) {
         this.subtitleLanguage = subtitleLanguage;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }

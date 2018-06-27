@@ -1,17 +1,21 @@
 package com.example.arunr.exoplayersubs;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,6 +32,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     public SubtitleAdapter() {
 
     }
+
 
     public SubtitleAdapter(List<SubtitleList> subtitles) {
         this.subtitles = subtitles;
@@ -50,9 +55,27 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SubtitleAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final SubtitleAdapter.MyViewHolder holder, int position) {
         SubtitleList subtitleList = subtitles.get(position);
         holder.subtitleLang.setText(subtitleList.getSubtitleLanguage());
+
+        // in some cases, it will prevent unwanted situations
+        holder.subsSelected.setOnCheckedChangeListener(null);
+
+        // if true, your checkbox will be selected, else unselected
+        holder.subsSelected.setChecked(subtitles.get(position).isChecked());
+
+        // get data from share preference about selected Subtitle
+        // if else statement
+        // for true make check box is checked true
+
+        holder.subsSelected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                subtitles.get(holder.getAdapterPosition()).setChecked(isChecked);
+            }
+        });
+
     }
 
     @Override
@@ -63,14 +86,12 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView subtitleLang;
         public CheckBox subsSelected;
-        public int subtitleLanguageSelected;
 
         public MyViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
             subtitleLang = view.findViewById(R.id.subtitle_language);
             subsSelected = view.findViewById(R.id.subs_checked);
-            subtitleLanguageSelected = getLayoutPosition();
 
         }
 
@@ -79,6 +100,36 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClickListener(view, getAdapterPosition());
             }
+
+            // checkbox is checked and unchecked
+            if (subsSelected.isChecked()) {
+                subsSelected.setChecked(false);
+            } else {
+                subsSelected.setChecked(true);
+            }
+            /*switch (getAdapterPosition()) {
+                case 0:
+                    if (subsSelected.isChecked())
+                    subsSelected.setChecked(false);
+                    else
+                        subsSelected.setChecked(true);
+                    break;
+                case 1:
+                    subsSelected.setChecked(true);
+                    break;
+                case 2:
+                    subsSelected.setChecked(true);
+                    break;
+                case 3:
+                    subsSelected.setChecked(true);
+                    break;
+            }*/
+
+            // Todo Create share preference
+
+
+            // Add data to preference
+
 
             // go through each item
             /*position = getAdapterPosition();
@@ -110,12 +161,5 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
         }
     }
 
-    public void setSubsPosition(int position) {
-        this.position = position;
-    }
-
-    public int getSubsPosition(int position) {
-        return position;
-    }
 
 }

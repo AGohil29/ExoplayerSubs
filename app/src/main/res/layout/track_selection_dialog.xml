@@ -3,13 +3,15 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@android:color/darker_gray">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/track_selection_dialog_heading"
         android:text="Subtitles"
+        android:background="#696969"
         android:textSize="20sp"
         android:textAlignment="center"
         android:padding="16dp"
@@ -39,14 +41,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Subs Settings"
-            android:background="@android:color/transparent"
-            android:layout_weight="1"/>
+            android:background="#696969"
+            android:layout_weight="1"
+            android:layout_marginEnd="1dp"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnOk"
             android:text="OK"
-            android:background="@android:color/transparent"
+            android:background="#696969"
             android:layout_weight="1"/>
 
     </LinearLayout>
