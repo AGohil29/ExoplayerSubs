@@ -1,13 +1,16 @@
 package com.example.arunr.exoplayersubs;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,9 +21,13 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckedTextView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +58,8 @@ import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.RandomTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -96,8 +105,15 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private CaptionStyleCompat captionStyleCompat;
     // for subtitles text size
     private TextView subsSize1, subsSize2, subsSize3, subsSize4, subsSize5;
+    private boolean isSelected;
     // for subtitles background
     private TextView subsBlackBackground, subsGrayBackground, subsTransparentBackground, subsWhiteBackground;
+    private Dialog mFullScreenDialog;
+    private boolean mExoPlayerFullscreen = false;
+    private FrameLayout mFullScreenButton;
+    private ImageView mFullScreenIcon;
+    private boolean playWhenReady;
+
     private SubtitleList subtitles;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -121,13 +137,12 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         setContentView(R.layout.activity_main);
 
         playerView = findViewById(R.id.video_view);
+        playWhenReady = true;
+        //playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);
         // for toggling subtitles
         subtitleView = findViewById(R.id.exo_subtitles);
         subtitleBtnOn = findViewById(R.id.subs_on);
         subtitleBtnOff = findViewById(R.id.subs_off);
-
-        prefs = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
-        editor = prefs.edit();
 
         // settings btn include multiple subtitle settings
         settingsBtn = findViewById(R.id.settings);
@@ -135,15 +150,66 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 showSelectedSubtitle();
+                playWhenReady = false;
             }
         });
 
         initializePlayer();
         showSubtitle(false);
-        requestFullScreenIfLandscape();
+        //requestFullScreenIfLandscape();
+
+        //Todo save the player state when resumed again
+        initFullscreenDialog();
+        initFullscreenButton();
     }
 
-    private void requestFullScreenIfLandscape() {
+    // methods for playing the video on fullscreen
+    private void initFullscreenDialog() {
+
+        mFullScreenDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+
+            public void onBackPressed() {
+                if (mExoPlayerFullscreen)
+                    closeFullscreenDialog();
+                super.onBackPressed();
+            }
+        };
+    }
+
+    private void openFullscreenDialog() {
+
+        ((ViewGroup) playerView.getParent()).removeView(playerView);
+        mFullScreenDialog.addContentView(playerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_fullscreen_skrink));
+        mExoPlayerFullscreen = true;
+        mFullScreenDialog.show();
+    }
+
+    private void closeFullscreenDialog() {
+
+        ((ViewGroup) playerView.getParent()).removeView(playerView);
+        ((FrameLayout) findViewById(R.id.main_media_frame)).addView(playerView);
+        mExoPlayerFullscreen = false;
+        mFullScreenDialog.dismiss();
+        mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_fullscreen_expand));
+    }
+
+    private void initFullscreenButton() {
+
+        PlaybackControlView controlView = playerView.findViewById(R.id.exo_controller);
+        mFullScreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
+        mFullScreenButton = controlView.findViewById(R.id.exo_fullscreen_button);
+        mFullScreenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mExoPlayerFullscreen)
+                    openFullscreenDialog();
+                else
+                    closeFullscreenDialog();
+            }
+        });
+    }
+    /*private void requestFullScreenIfLandscape() {
         if (getResources().getBoolean(R.bool.landscape)) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -152,7 +218,29 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN);
         }
-    }
+    }*/
+
+    /*@Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checking the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            //First Hide other objects (listview or recyclerview), better hide them using Gone.
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+            //to remove "information bar" above the action bar
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getSupportActionBar().hide();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            getSupportActionBar().show();
+        }
+    }*/
 
     // method to toggle subtitles on and off
     public void onClick(View view) {
@@ -166,35 +254,10 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         } else {
             showSubtitle(false);
         }
-        //AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        //builder.setTitle("Subtitles")
-        //.setItems(languages, new DialogInterface.OnClickListener() {
-        //  @Override
-        //public void onClick(DialogInterface dialogInterface, int i) {
-        //  Toast.makeText(getApplicationContext(), "Subs in " + getString(i), Toast.LENGTH_SHORT).show();
-        //}
-        //})
-        //.setView(buildView(builder.getContext()))
-        // .setPositiveButton(android.R.string.ok, null)
-        //.setNegativeButton(android.R.string.cancel, null)
-        //.create()
-        // .show();
     }
 
     private void showSelectedSubtitle() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
-
-        /*// To align the title in center
-        TextView title = new TextView(this);
-        // You Can Customise your Title here
-        title.setText("Subtitles");
-        //title.setBackgroundColor(Color.DKGRAY);
-        title.setPadding(10, 10, 10, 10);
-        title.setGravity(Gravity.CENTER);
-        //title.setTextColor(Color.WHITE);
-        title.setTextSize(20);
-
-        builder.setCustomTitle(title);*/
 
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         View view = inflater.inflate(R.layout.track_selection_dialog, null);
@@ -273,6 +336,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                playWhenReady = true;
                 alertDialog.dismiss();
             }
         });
@@ -281,6 +345,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 showSubsSettingsDialog();
+                playWhenReady = false;
                 alertDialog.dismiss();
             }
         });
@@ -310,10 +375,12 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                playWhenReady = true;
                 alertDialog.dismiss();
             }
         });
-
+        //1. Todo show a sample text of selected subtitle size and format
+        //2. Todo selects only one size and one format
         // setting subtitles text size
         subsSize1 = view.findViewById(R.id.subs_size_1);
         subsSize2 = view.findViewById(R.id.subs_size_2);
@@ -325,6 +392,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.8f);
+                // to change the border on selection
+                subsSizeSelected(subsSize1);
             }
         });
 
@@ -332,6 +401,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.9f);
+                // to change the border on selection
+                subsSizeSelected(subsSize2);
             }
         });
 
@@ -339,6 +410,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.0f);
+                // to change the border on selection
+                subsSizeSelected(subsSize3);
             }
         });
 
@@ -346,6 +419,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.1f);
+                // to change the border on selection
+                subsSizeSelected(subsSize4);
             }
         });
 
@@ -353,6 +428,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.2f);
+                // to change the border on selection
+                subsSizeSelected(subsSize5);
             }
         });
 
@@ -369,6 +446,15 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.BLACK, Color.TRANSPARENT,
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
+                // to change the border on selection
+                if (subsBlackBackground.isSelected()) {
+                    subsBlackBackground.setBackgroundResource(R.drawable.border_style);
+                    subsBlackBackground.setBackgroundColor(getResources().getColor(R.color.colorBlack));
+                    subsBlackBackground.setSelected(false);
+                } else {
+                    subsBlackBackground.setBackgroundResource(R.drawable.border_style_format_black);
+                    subsBlackBackground.setSelected(true);
+                }
             }
         });
 
@@ -379,6 +465,15 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.LTGRAY, Color.TRANSPARENT,
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
+                // to change the border on selection
+                if (subsGrayBackground.isSelected()) {
+                    subsGrayBackground.setBackgroundResource(R.drawable.border_style);
+                    subsGrayBackground.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                    subsGrayBackground.setSelected(false);
+                } else {
+                    subsGrayBackground.setBackgroundResource(R.drawable.border_style_format_gray);
+                    subsGrayBackground.setSelected(true);
+                }
             }
         });
 
@@ -389,6 +484,15 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 captionStyleCompat = new CaptionStyleCompat(Color.YELLOW, Color.TRANSPARENT, Color.TRANSPARENT,
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
+                // to change the border on selection
+                if (subsTransparentBackground.isSelected()) {
+                    subsTransparentBackground.setBackgroundResource(R.drawable.border_style);
+                    subsTransparentBackground.setSelected(false);
+                } else {
+                    subsTransparentBackground.setBackgroundResource(R.drawable.border_style_selected);
+                    subsTransparentBackground.setSelected(true);
+                }
+
             }
         });
 
@@ -399,6 +503,16 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 captionStyleCompat = new CaptionStyleCompat(Color.BLACK, Color.WHITE, Color.TRANSPARENT,
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
+                // to change the border on selection
+                if (subsWhiteBackground.isSelected()) {
+                    subsWhiteBackground.setBackgroundResource(R.drawable.border_style);
+                    subsWhiteBackground.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                    subsWhiteBackground.setSelected(false);
+                } else {
+                    subsWhiteBackground.setBackgroundResource(R.drawable.border_style_format_white);
+                    subsWhiteBackground.setSelected(true);
+                }
+
             }
         });
     }
@@ -406,25 +520,43 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     @Override
     public void onStart() {
         super.onStart();
-        initializePlayer();
+        if (Util.SDK_INT > 23) {
+            initFullscreenDialog();
+            initFullscreenButton();
+            initializePlayer();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        initializePlayer();
+        if (Util.SDK_INT >= 23 && player == null) {
+            initFullscreenDialog();
+            initFullscreenButton();
+            initializePlayer();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        releasePlayers();
+        if (Util.SDK_INT <= 23) {
+            releasePlayers();
+
+            if (mFullScreenDialog != null)
+                mFullScreenDialog.dismiss();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        releasePlayers();
+        if (Util.SDK_INT > 23) {
+            releasePlayers();
+
+            if (mFullScreenDialog != null)
+                mFullScreenDialog.dismiss();
+        }
     }
 
     @Override
@@ -453,7 +585,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
             player.addListener(new PlayerEventListener());
             player.addListener(eventLogger);
-            player.setPlayWhenReady(true);
+            player.setPlayWhenReady(playWhenReady);
             playerView.setPlayer(player);
 
             // Build the subtitle mediasource
@@ -465,32 +597,17 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
             videoSource = buildMediaSource(Uri.parse(getString(R.string.media_url_dash)), mainHandler, eventLogger);
             player.prepare(videoSource, false, true);
-            // use if for different mediasource
-            /*if (position == 1) {
-                MediaSource subtitleSourceEng = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt"),
-                        dataSourceFactory, format, C.TIME_UNSET);
-                mergedSource = new MergingMediaSource(videoSource, subtitleSourceEng);
-                player.prepare(mergedSource, false, true);
-
-            } else if (position == 2) {
-                MediaSource subtitleSourceSp = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-es.srt"),
-                        dataSourceFactory, format, C.TIME_UNSET);
-                mergedSource = new MergingMediaSource(videoSource, subtitleSourceSp);
-                player.prepare(mergedSource, false, true);
-            } else if (position == 3) {
-                MediaSource subtitleSourceFr = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-fr-Goofy.srt"),
-                        dataSourceFactory, format, C.TIME_UNSET);
-
-                mergedSource = new MergingMediaSource(videoSource, subtitleSourceFr);
-                player.prepare(mergedSource, false, true);
-            } else {
-                MediaSource subtitleSourceEng = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt"),
-                        dataSourceFactory, format, C.TIME_UNSET);
-                mergedSource = new MergingMediaSource(videoSource, subtitleSourceEng);
-                player.prepare(mergedSource, false, true);
-            }*/
         }
     }
+
+   /* private void hideSystemUi() {
+        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }*/
 
     private MediaSource buildMediaSource(
             Uri uri,
@@ -521,7 +638,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     }
 
     private DataSource.Factory getDataSourceFactory() {
-        return new DefaultDataSourceFactory(this,bandwidthMeter,
+        return new DefaultDataSourceFactory(this, bandwidthMeter,
                 getHttpDataSourceFactory());
     }
 
@@ -532,8 +649,19 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
     private void releasePlayers() {
         if (player != null) {
+            playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
+        }
+    }
+
+    private void subsSizeSelected(TextView subsSize) {
+        if (subsSize.isSelected()) {
+            subsSize.setBackgroundResource(R.drawable.border_style);
+            subsSize.setSelected(false);
+        } else {
+            subsSize.setBackgroundResource(R.drawable.border_style_selected);
+            subsSize.setSelected(true);
         }
     }
 

@@ -54,70 +54,75 @@
             android:layout_gravity="center"
             android:layout_margin="4dp"
             android:layout_weight="1"
-            android:padding="8dp"
+            android:padding="4dp"
             android:text="Size"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
         <TextView
             android:id="@+id/subs_size_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="4dp"
-            android:background="#696969"
+            android:background="@drawable/border_style"
             android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="12sp" />
+            android:textSize="10sp"
+            android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/subs_size_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="4dp"
-            android:background="#696969"
+            android:background="@drawable/border_style"
             android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="13sp" />
+            android:textSize="11sp"
+            android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/subs_size_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="4dp"
-            android:background="#696969"
+            android:background="@drawable/border_style"
             android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:textSize="12sp"
+            android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/subs_size_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="4dp"
-            android:background="#696969"
+            android:background="@drawable/border_style"
             android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="15sp" />
+            android:textSize="13sp"
+            android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/subs_size_5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="4dp"
-            android:background="#696969"
+            android:background="@drawable/border_style"
             android:padding="8dp"
             android:text="Aa"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp"
+            android:textAlignment="center"/>
 
     </LinearLayout>
 
@@ -155,7 +160,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@android:color/black"
+            android:background="@color/colorBlack"
             android:padding="8dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -169,7 +174,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@android:color/darker_gray"
+            android:background="@color/colorGray"
             android:padding="8dp"
             android:focusable="false"
             android:focusableInTouchMode="true"
@@ -183,7 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="#696969"
+            android:background="@drawable/border_style"
             android:padding="8dp"
             android:focusable="false"
             android:focusableInTouchMode="true"
@@ -197,7 +202,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@android:color/white"
+            android:background="@color/colorWhite"
             android:padding="8dp"
             android:focusable="false"
             android:focusableInTouchMode="true"

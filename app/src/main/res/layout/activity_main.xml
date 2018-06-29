@@ -5,20 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    android:background="@android:color/black"
+    android:background="#000000"
+    android:id="@+id/main_media_frame"
     tools:context="com.example.arunr.exoplayersubs.MainActivity">
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_gravity="top"
-        app:controller_layout_id="@layout/exoplayer_controls"/>
-
-    <com.google.android.exoplayer2.ui.SubtitleView
-        android:id="@id/exo_subtitles"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAlignment="center" />
+        android:layout_height="match_parent"
+        android:gravity="center" />
 
 </FrameLayout>

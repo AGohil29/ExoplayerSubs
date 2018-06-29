@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     private Context context;
     public int position;
     private onRecyclerViewItemClickListener mItemClickListener;
+    private int lastCheckedPosition = -1;
 
     public SubtitleAdapter() {
 
@@ -63,18 +65,12 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
         holder.subsSelected.setOnCheckedChangeListener(null);
 
         // if true, your checkbox will be selected, else unselected
-        holder.subsSelected.setChecked(subtitles.get(position).isChecked());
+        holder.subsSelected.setChecked(position == lastCheckedPosition);
 
         // get data from share preference about selected Subtitle
         // if else statement
         // for true make check box is checked true
 
-        holder.subsSelected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                subtitles.get(holder.getAdapterPosition()).setChecked(isChecked);
-            }
-        });
 
     }
 
@@ -85,13 +81,14 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView subtitleLang;
-        public CheckBox subsSelected;
+        public RadioButton subsSelected;
 
         public MyViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
             subtitleLang = view.findViewById(R.id.subtitle_language);
             subsSelected = view.findViewById(R.id.subs_checked);
+            subsSelected.setOnClickListener(this);
 
         }
 
@@ -100,64 +97,22 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClickListener(view, getAdapterPosition());
             }
-
+            int copyOfLastCheckedPosition = lastCheckedPosition;
+            lastCheckedPosition = getAdapterPosition();
+            notifyItemChanged(copyOfLastCheckedPosition);
+            notifyItemChanged(lastCheckedPosition);
+            notifyDataSetChanged();
             // checkbox is checked and unchecked
-            if (subsSelected.isChecked()) {
+            /*if (subsSelected.isChecked()) {
                 subsSelected.setChecked(false);
             } else {
                 subsSelected.setChecked(true);
-            }
-            /*switch (getAdapterPosition()) {
-                case 0:
-                    if (subsSelected.isChecked())
-                    subsSelected.setChecked(false);
-                    else
-                        subsSelected.setChecked(true);
-                    break;
-                case 1:
-                    subsSelected.setChecked(true);
-                    break;
-                case 2:
-                    subsSelected.setChecked(true);
-                    break;
-                case 3:
-                    subsSelected.setChecked(true);
-                    break;
             }*/
 
             // Todo Create share preference
 
-
             // Add data to preference
 
-
-            // go through each item
-            /*position = getAdapterPosition();
-            subtitleSelected.selectedSubtitle(subtitles.get(getAdapterPosition()), getAdapterPosition());
-            switch (getLayoutPosition()) {
-                case 0:
-                    // no subs
-                    subsSelected.setVisibility(View.VISIBLE);
-                    Toast.makeText(view.getContext(), "No subtitles", Toast.LENGTH_SHORT).show();
-                    break;
-                case 1:
-                    // English subs
-                    subsSelected.setVisibility(View.VISIBLE);
-                    Toast.makeText(view.getContext(), "English subtitles", Toast.LENGTH_SHORT).show();
-                    break;
-                case 2:
-                    // Hindi Subs
-                    subsSelected.setVisibility(View.VISIBLE);
-                    Toast.makeText(view.getContext(), "Hindi subtitles", Toast.LENGTH_SHORT).show();
-                    break;
-                case 3:
-                    // Marathi Subs
-                    subsSelected.setVisibility(View.VISIBLE);
-                    Toast.makeText(view.getContext(), "Marathi subtitles", Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    // NO subs
-            }*/
         }
     }
 
