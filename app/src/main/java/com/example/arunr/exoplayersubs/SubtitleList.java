@@ -10,14 +10,15 @@ import android.widget.ImageView;
 public class SubtitleList {
 
     private String subtitleLanguage;
-    private boolean checked;
+    private boolean isCheckedImage;
 
     public SubtitleList() {
 
     }
 
-    public SubtitleList(String subtitleLanguage) {
+    public SubtitleList(String subtitleLanguage, boolean isCheckedImage) {
         this.subtitleLanguage = subtitleLanguage;
+        this.isCheckedImage = isCheckedImage;
     }
 
     public String getSubtitleLanguage() {
@@ -28,11 +29,11 @@ public class SubtitleList {
         this.subtitleLanguage = subtitleLanguage;
     }
 
-    public boolean isChecked() {
-        return checked;
+    public boolean isCheckedImage() {
+        return isCheckedImage;
     }
 
-    public void setChecked(boolean checked) {
-        this.checked = checked;
+    public void setCheckedImage(boolean checkedImage) {
+        isCheckedImage = checkedImage;
     }
 }

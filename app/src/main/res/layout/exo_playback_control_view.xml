@@ -43,30 +43,27 @@
             android:id="@id/exo_next"
             style="@style/ExoMediaButton.Next" />
 
-        <ImageButton
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/subtitleBtn">
+
+        <ImageView
             android:id="@+id/subs_off"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:onClick="onClick"
             android:src="@drawable/ic_subtitle_off" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/subs_on"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:onClick="onClick"
             android:src="@drawable/ic_subtitle_on"
             android:visibility="gone" />
 
-        <ImageButton
-            android:id="@+id/settings"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_settings"
-            android:tint="@android:color/white" />
+    </FrameLayout>
 
 
 </LinearLayout>

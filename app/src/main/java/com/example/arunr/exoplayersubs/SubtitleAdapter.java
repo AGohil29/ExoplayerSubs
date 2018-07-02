@@ -2,6 +2,7 @@ package com.example.arunr.exoplayersubs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -27,7 +28,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
     private List<SubtitleList> subtitles;
     private Context context;
-    public int position;
+    public int row_index = -1;
     private onRecyclerViewItemClickListener mItemClickListener;
     private int lastCheckedPosition = -1;
 
@@ -36,8 +37,9 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     }
 
 
-    public SubtitleAdapter(List<SubtitleList> subtitles) {
+    public SubtitleAdapter(List<SubtitleList> subtitles, Context context) {
         this.subtitles = subtitles;
+        this.context = context;
     }
 
     public void setOnItemClickListener(onRecyclerViewItemClickListener mItemClickListener) {
@@ -60,12 +62,26 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     public void onBindViewHolder(@NonNull final SubtitleAdapter.MyViewHolder holder, int position) {
         SubtitleList subtitleList = subtitles.get(position);
         holder.subtitleLang.setText(subtitleList.getSubtitleLanguage());
+        if (!subtitles.get(position).isCheckedImage())
+            holder.imageView.setVisibility(View.GONE);
+        else
+            holder.imageView.setVisibility(View.VISIBLE);
 
-        // in some cases, it will prevent unwanted situations
-        holder.subsSelected.setOnCheckedChangeListener(null);
+        holder.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                row_index = position; // set row index to selected position
+                Common.currentItem = subtitles.get(position); // set current item is item selected
+                notifyDataSetChanged();
+            }
+        });
 
-        // if true, your checkbox will be selected, else unselected
-        holder.subsSelected.setChecked(position == lastCheckedPosition);
+        //Set highlight color
+        if (row_index == position) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#848282"));
+        } else {
+            holder.itemView.setBackgroundColor(Color.parseColor("#696969"));
+        }
 
         // get data from share preference about selected Subtitle
         // if else statement
@@ -81,14 +97,19 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView subtitleLang;
-        public RadioButton subsSelected;
+        public ImageView imageView;
+
+        ItemClickListener itemClickListener;
+
+        public void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
 
         public MyViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
             subtitleLang = view.findViewById(R.id.subtitle_language);
-            subsSelected = view.findViewById(R.id.subs_checked);
-            subsSelected.setOnClickListener(this);
+            imageView = view.findViewById(R.id.subs_checked_image);
 
         }
 
@@ -97,6 +118,9 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClickListener(view, getAdapterPosition());
             }
+
+            itemClickListener.onClick(view, getAdapterPosition());
+
             int copyOfLastCheckedPosition = lastCheckedPosition;
             lastCheckedPosition = getAdapterPosition();
             notifyItemChanged(copyOfLastCheckedPosition);

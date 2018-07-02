@@ -1,43 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
+    android:orientation="vertical"
     android:focusable="true"
     android:background="#696969">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:weightSum="10">
 
     <TextView
         android:id="@+id/subtitle_language"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="8"
+        android:layout_gravity="center"
         android:padding="16dp"
-        android:layout_marginStart="8dp"
         android:text="NONE"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/subs_checked"
-        app:layout_constraintEnd_toStartOf="@+id/subs_checked"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="14sp" />
 
-    <RadioButton
+    <ImageView
+        android:id="@+id/subs_checked_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:padding="16dp"
+        android:src="@drawable/checkmark"
+        android:tint="#A8EADF12"
+        android:visibility="gone" />
+
+</LinearLayout>
+
+    <!--<RadioButton
         android:id="@+id/subs_checked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:layout_marginTop="8dp"
         android:enabled="true"
-        android:layout_marginStart="8dp"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:id="@+id/view"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintTop_toBottomOf="@+id/subs_checked"/>
+        android:background="@android:color/darker_gray" />
+
+</LinearLayout>
 
     <!--<ImageView
         android:id="@+id/subs_checked"
@@ -51,4 +70,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />-->
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

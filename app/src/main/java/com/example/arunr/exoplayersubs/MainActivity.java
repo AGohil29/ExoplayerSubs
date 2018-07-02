@@ -80,9 +80,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private PlayerView playerView;
     private SimpleExoPlayer player;
     private SubtitleView subtitleView;
-    private ImageButton subtitleBtnOn;
-    private ImageButton subtitleBtnOff;
-    private ImageButton settingsBtn;
 
     private DefaultTrackSelector trackSelector;
     private DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -91,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private int streamType;
     private Handler mainHandler = new Handler();
 
-    private ArrayList<SubtitleList> subtitleData = new ArrayList<SubtitleList>();
+    private ArrayList<SubtitleList> subtitleData = new ArrayList<>();
     private RecyclerView recyclerView;
     private SubtitleAdapter subsAdapter;
 
@@ -117,6 +114,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private SubtitleList subtitles;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private FrameLayout subtitleBtn;
+    private ImageView subtitleBtnOn;
+    private ImageView subtitleBtnOff;
 
     public void showSubtitle(boolean show) {
         if (playerView != null && playerView.getSubtitleView() != null)
@@ -141,12 +141,12 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         //playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);
         // for toggling subtitles
         subtitleView = findViewById(R.id.exo_subtitles);
+        subtitleBtn = findViewById(R.id.subtitleBtn);
         subtitleBtnOn = findViewById(R.id.subs_on);
         subtitleBtnOff = findViewById(R.id.subs_off);
 
         // settings btn include multiple subtitle settings
-        settingsBtn = findViewById(R.id.settings);
-        settingsBtn.setOnClickListener(new View.OnClickListener() {
+        subtitleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showSelectedSubtitle();
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     }*/
 
     // method to toggle subtitles on and off
-    public void onClick(View view) {
+   /* public void onClick(View view) {
         if (playerView != null && subtitleBtnOn.getVisibility() == View.GONE) {
             initializePlayer();
             MediaSource subtitleSourceEng = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt"),
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         } else {
             showSubtitle(false);
         }
-    }
+    }*/
 
     private void showSelectedSubtitle() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
@@ -281,6 +281,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             for (String sub : subs) {
                 subtitles = new SubtitleList();
                 subtitles.setSubtitleLanguage(sub);
+                subtitles.setCheckedImage(false);
                 this.subtitleData.add(subtitles);
             }
         }
@@ -294,13 +295,14 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                     ));
             }
         }*/
-        subsAdapter = new SubtitleAdapter(subtitleData);
+        subsAdapter = new SubtitleAdapter(subtitleData, this);
         recyclerView.setAdapter(subsAdapter);
         subsAdapter.notifyDataSetChanged();
         subsAdapter.setOnItemClickListener(new SubtitleAdapter.onRecyclerViewItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position) {
                 //Todo if view is clicked its related checkbox is checked
+                // prepare the player when ok button is clicked
                 if (position == 0) {
                     initializePlayer();
                     // you can pass single or multiple sources but not null
@@ -328,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                     mergedSource = new MergingMediaSource(videoSource, subtitleSourceFr);
                     showSubtitle(true);
                 }
-                player.prepare(mergedSource, false, true);
+
             }
 
         });
@@ -336,6 +338,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                player.prepare(mergedSource, false, true);
                 playWhenReady = true;
                 alertDialog.dismiss();
             }
