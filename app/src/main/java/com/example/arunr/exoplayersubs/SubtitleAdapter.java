@@ -62,10 +62,6 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     public void onBindViewHolder(@NonNull final SubtitleAdapter.MyViewHolder holder, int position) {
         SubtitleList subtitleList = subtitles.get(position);
         holder.subtitleLang.setText(subtitleList.getSubtitleLanguage());
-        if (!subtitles.get(position).isCheckedImage())
-            holder.imageView.setVisibility(View.GONE);
-        else
-            holder.imageView.setVisibility(View.VISIBLE);
 
         holder.setItemClickListener(new ItemClickListener() {
             @Override
@@ -76,11 +72,15 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             }
         });
 
-        //Set highlight color
+        // highlight color of selected view and display the image
         if (row_index == position) {
             holder.itemView.setBackgroundColor(Color.parseColor("#848282"));
+            //show the image when item is clicked
+            holder.imageView.setVisibility(View.VISIBLE);
         } else {
             holder.itemView.setBackgroundColor(Color.parseColor("#696969"));
+            //hide the image when another item is clicked
+            holder.imageView.setVisibility(View.GONE);
         }
 
         // get data from share preference about selected Subtitle
@@ -98,6 +98,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView subtitleLang;
         public ImageView imageView;
+        public SubtitleList subtitleList;
 
         ItemClickListener itemClickListener;
 
@@ -118,7 +119,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClickListener(view, getAdapterPosition());
             }
-
+            // Todo -- change your image view visibility here
             itemClickListener.onClick(view, getAdapterPosition());
 
             int copyOfLastCheckedPosition = lastCheckedPosition;
