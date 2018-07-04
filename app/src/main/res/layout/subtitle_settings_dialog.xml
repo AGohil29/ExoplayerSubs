@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#696969">
 
     <ImageButton
@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:padding="16dp"
+        android:padding="8dp"
         android:src="@drawable/ic_arrow_back"
         android:tint="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,11 +21,11 @@
         android:id="@+id/second_dialog_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:padding="8dp"
         android:text="Subtitles Settings"
         android:textAlignment="textStart"
         android:textColor="@android:color/white"
-        android:textSize="20sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/linear_layout_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_back"
@@ -52,77 +52,56 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="4dp"
             android:layout_weight="1"
-            android:padding="4dp"
+            android:padding="2dp"
             android:text="Size"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
-        <TextView
+        <ImageView
             android:id="@+id/subs_size_1"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style"
-            android:padding="8dp"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="10sp"
-            android:textAlignment="center"/>
+            android:src="@drawable/ic_text_first"
+            android:background="@drawable/border_style"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/subs_size_2"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style"
-            android:padding="8dp"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="11sp"
-            android:textAlignment="center"/>
+            android:src="@drawable/ic_text_second"
+            android:background="@drawable/border_style"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/subs_size_3"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style"
-            android:padding="8dp"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textAlignment="center"/>
+            android:src="@drawable/ic_text_third"
+            android:background="@drawable/border_style"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/subs_size_4"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style"
-            android:padding="8dp"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="13sp"
-            android:textAlignment="center"/>
+            android:src="@drawable/ic_text_four"
+            android:background="@drawable/border_style"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/subs_size_5"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style"
-            android:padding="8dp"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:textAlignment="center"/>
+            android:src="@drawable/ic_text_five"
+            android:background="@drawable/border_style"/>
 
     </LinearLayout>
 
@@ -148,67 +127,48 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:background="#696969"
-            android:padding="8dp"
+            android:padding="2dp"
             android:text="Format"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
-        <TextView
+        <ImageView
             android:id="@+id/format_black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@color/colorBlack"
-            android:padding="8dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:src="@drawable/ic_text_black_bg"
+            android:background="@drawable/border_style"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/format_light_grey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@color/colorGray"
-            android:padding="8dp"
-            android:focusable="false"
-            android:focusableInTouchMode="true"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:src="@drawable/ic_text_white_no_bg"
+            android:background="@drawable/border_style"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/format_transparent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style"
-            android:padding="8dp"
-            android:focusable="false"
-            android:focusableInTouchMode="true"
-            android:text="Aa"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:src="@drawable/ic_text_yellow"
+            android:background="@drawable/border_style"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/format_white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@color/colorWhite"
-            android:padding="8dp"
-            android:focusable="false"
-            android:focusableInTouchMode="true"
-            android:text="Aa"
-            android:textColor="@android:color/black"
-            android:textSize="14sp" />
+            android:src="@drawable/ic_text_black_no_bg"
+            android:background="@drawable/border_style"/>
 
     </LinearLayout>
 
@@ -223,7 +183,6 @@
         android:id="@+id/subtitle_settings_dialog_btnOk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:background="#696969"
         android:padding="4dp"
         android:text="OK"

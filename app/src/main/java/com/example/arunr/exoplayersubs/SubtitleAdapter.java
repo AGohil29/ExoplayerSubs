@@ -74,10 +74,12 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
         // highlight color of selected view and display the image
         if (row_index == position) {
+            //color of the selected item
             holder.itemView.setBackgroundColor(Color.parseColor("#848282"));
             //show the image when item is clicked
             holder.imageView.setVisibility(View.VISIBLE);
         } else {
+            //color when item is not selected
             holder.itemView.setBackgroundColor(Color.parseColor("#696969"));
             //hide the image when another item is clicked
             holder.imageView.setVisibility(View.GONE);
@@ -98,7 +100,6 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView subtitleLang;
         public ImageView imageView;
-        public SubtitleList subtitleList;
 
         ItemClickListener itemClickListener;
 

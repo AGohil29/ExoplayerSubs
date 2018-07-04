@@ -5,11 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -101,10 +106,10 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private MediaSource videoSource;
     private CaptionStyleCompat captionStyleCompat;
     // for subtitles text size
-    private TextView subsSize1, subsSize2, subsSize3, subsSize4, subsSize5;
+    private ImageView subsSize1, subsSize2, subsSize3, subsSize4, subsSize5;
     private boolean isSelected;
     // for subtitles background
-    private TextView subsBlackBackground, subsGrayBackground, subsTransparentBackground, subsWhiteBackground;
+    private ImageView subsBlackBackground, subsGrayBackground, subsTransparentBackground, subsWhiteBackground;
     private Dialog mFullScreenDialog;
     private boolean mExoPlayerFullscreen = false;
     private FrameLayout mFullScreenButton;
@@ -264,6 +269,16 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         builder.setView(view);
 
         final AlertDialog alertDialog = builder.create();
+
+        // set the height and width of dialog
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.gravity = Gravity.CENTER;
+
+        alertDialog.getWindow().setAttributes(layoutParams);
+
         alertDialog.show();
 
         Button subsSettingBtn, btnOk;
@@ -301,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         subsAdapter.setOnItemClickListener(new SubtitleAdapter.onRecyclerViewItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position) {
-                //Todo if view is clicked its related checkbox is checked
+                //Completed if view is clicked its related imageview is displayed
                 // prepare the player when ok button is clicked
                 if (position == 0) {
                     initializePlayer();
@@ -383,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             }
         });
         //1. Todo show a sample text of selected subtitle size and format
-        //2. Todo selects only one size and one format
+        //2. Completed selects only one size and one format
         // setting subtitles text size
         subsSize1 = view.findViewById(R.id.subs_size_1);
         subsSize2 = view.findViewById(R.id.subs_size_2);
@@ -397,6 +412,10 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.8f);
                 // to change the border on selection
                 subsSizeSelected(subsSize1);
+                // deselect the remaining subsSize
+                ImageView[] subSizesToDeselect = {subsSize2, subsSize3, subsSize4, subsSize5};
+                subsSizeDeselectRemainingSizes(subSizesToDeselect);
+
             }
         });
 
@@ -406,6 +425,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.9f);
                 // to change the border on selection
                 subsSizeSelected(subsSize2);
+                // deselect the remaining subsSize
+                ImageView[] subSizesToDeselect = {subsSize1, subsSize3, subsSize4, subsSize5};
+                subsSizeDeselectRemainingSizes(subSizesToDeselect);
             }
         });
 
@@ -415,6 +437,10 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.0f);
                 // to change the border on selection
                 subsSizeSelected(subsSize3);
+                // deselect the remaining subsSize
+                ImageView[] subSizesToDeselect = {subsSize1, subsSize2, subsSize4, subsSize5};
+                subsSizeDeselectRemainingSizes(subSizesToDeselect);
+
             }
         });
 
@@ -424,6 +450,10 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.1f);
                 // to change the border on selection
                 subsSizeSelected(subsSize4);
+                // deselect the remaining subsSize
+                ImageView[] subSizesToDeselect = {subsSize1, subsSize2, subsSize3, subsSize5};
+                subsSizeDeselectRemainingSizes(subSizesToDeselect);
+
             }
         });
 
@@ -433,6 +463,10 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.2f);
                 // to change the border on selection
                 subsSizeSelected(subsSize5);
+                // deselect the remaining subsSize
+                ImageView[] subSizesToDeselect = {subsSize1, subsSize2, subsSize3, subsSize4};
+                subsSizeDeselectRemainingSizes(subSizesToDeselect);
+
             }
         });
 
@@ -450,14 +484,12 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
                 // to change the border on selection
-                if (subsBlackBackground.isSelected()) {
-                    subsBlackBackground.setBackgroundResource(R.drawable.border_style);
-                    subsBlackBackground.setBackgroundColor(getResources().getColor(R.color.colorBlack));
-                    subsBlackBackground.setSelected(false);
-                } else {
-                    subsBlackBackground.setBackgroundResource(R.drawable.border_style_format_black);
-                    subsBlackBackground.setSelected(true);
-                }
+                subtitleFormatSelected(subsBlackBackground);
+
+                // deselect remaining subtitle format
+                ImageView subtileFormats[] = {subsGrayBackground, subsTransparentBackground, subsWhiteBackground};
+                deselectOtherSubtitleFormat(subtileFormats);
+
             }
         });
 
@@ -469,14 +501,12 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
                 // to change the border on selection
-                if (subsGrayBackground.isSelected()) {
-                    subsGrayBackground.setBackgroundResource(R.drawable.border_style);
-                    subsGrayBackground.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                    subsGrayBackground.setSelected(false);
-                } else {
-                    subsGrayBackground.setBackgroundResource(R.drawable.border_style_format_gray);
-                    subsGrayBackground.setSelected(true);
-                }
+                subtitleFormatSelected(subsGrayBackground);
+
+                // deselect remaining subtitle format
+                ImageView subtileFormats[] = {subsBlackBackground, subsTransparentBackground, subsWhiteBackground};
+                deselectOtherSubtitleFormat(subtileFormats);
+
             }
         });
 
@@ -488,13 +518,11 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
                 // to change the border on selection
-                if (subsTransparentBackground.isSelected()) {
-                    subsTransparentBackground.setBackgroundResource(R.drawable.border_style);
-                    subsTransparentBackground.setSelected(false);
-                } else {
-                    subsTransparentBackground.setBackgroundResource(R.drawable.border_style_selected);
-                    subsTransparentBackground.setSelected(true);
-                }
+                subtitleFormatSelected(subsTransparentBackground);
+
+                // deselect remaining subtitle format
+                ImageView subtileFormats[] = {subsGrayBackground, subsBlackBackground, subsWhiteBackground};
+                deselectOtherSubtitleFormat(subtileFormats);
 
             }
         });
@@ -507,14 +535,11 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                         CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
                 playerView.getSubtitleView().setStyle(captionStyleCompat);
                 // to change the border on selection
-                if (subsWhiteBackground.isSelected()) {
-                    subsWhiteBackground.setBackgroundResource(R.drawable.border_style);
-                    subsWhiteBackground.setBackgroundColor(getResources().getColor(R.color.colorWhite));
-                    subsWhiteBackground.setSelected(false);
-                } else {
-                    subsWhiteBackground.setBackgroundResource(R.drawable.border_style_format_white);
-                    subsWhiteBackground.setSelected(true);
-                }
+                subtitleFormatSelected(subsWhiteBackground);
+
+                // deselect remaining subtitle format
+                ImageView subtileFormats[] = {subsGrayBackground, subsTransparentBackground, subsBlackBackground};
+                deselectOtherSubtitleFormat(subtileFormats);
 
             }
         });
@@ -658,13 +683,37 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         }
     }
 
-    private void subsSizeSelected(TextView subsSize) {
+    private void subsSizeSelected(ImageView subsSize) {
         if (subsSize.isSelected()) {
             subsSize.setBackgroundResource(R.drawable.border_style);
             subsSize.setSelected(false);
         } else {
             subsSize.setBackgroundResource(R.drawable.border_style_selected);
             subsSize.setSelected(true);
+        }
+    }
+
+    private void subsSizeDeselectRemainingSizes(ImageView subsSizeToDeselect[]) {
+        for (ImageView aSubsSizeToDeselect : subsSizeToDeselect) {
+            aSubsSizeToDeselect.setBackgroundResource(R.drawable.border_style);
+            aSubsSizeToDeselect.setSelected(false);
+        }
+    }
+
+    private void subtitleFormatSelected(ImageView subtitleFormat) {
+        if (subtitleFormat.isSelected()) {
+            subtitleFormat.setBackgroundResource(R.drawable.border_style);
+            subtitleFormat.setSelected(false);
+        } else {
+            subtitleFormat.setBackgroundResource(R.drawable.border_style_selected);
+            subtitleFormat.setSelected(true);
+        }
+    }
+
+    private void deselectOtherSubtitleFormat(ImageView subtitleFormat[]) {
+        for (ImageView aSubtitleFormat : subtitleFormat) {
+            aSubtitleFormat.setBackgroundResource(R.drawable.border_style);
+            aSubtitleFormat.setSelected(false);
         }
     }
 

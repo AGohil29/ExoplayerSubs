@@ -14,16 +14,15 @@
         android:background="#696969"
         android:textSize="20sp"
         android:textAlignment="center"
-        android:padding="16dp"
+        android:padding="8dp"
         android:textColor="#ffa500"/>
 
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:padding="16dp"
-        android:background="#ffa500"
-        android:paddingTop="32dp" />
+        android:padding="4dp"
+        android:background="#ffa500" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -41,6 +40,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Subs Settings"
+            android:textSize="14dp"
+            android:padding="4dp"
             android:background="#696969"
             android:layout_weight="1"
             android:layout_marginEnd="1dp"/>
@@ -49,6 +50,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btnOk"
             android:text="OK"
+            android:textSize="14dp"
+            android:padding="4dp"
             android:background="#696969"
             android:layout_weight="1"/>
 
