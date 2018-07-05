@@ -28,7 +28,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
     private List<SubtitleList> subtitles;
     private Context context;
-    public int row_index = -1;
+    public int row_index = 0;
     private onRecyclerViewItemClickListener mItemClickListener;
     private int lastCheckedPosition = -1;
 
