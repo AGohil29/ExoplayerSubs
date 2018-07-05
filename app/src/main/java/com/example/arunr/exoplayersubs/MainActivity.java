@@ -142,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         setContentView(R.layout.activity_main);
 
         playerView = findViewById(R.id.video_view);
-        playWhenReady = true;
         //playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);
         // for toggling subtitles
         subtitleView = findViewById(R.id.exo_subtitles);
@@ -353,9 +352,13 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                player.prepare(mergedSource, false, true);
-                playWhenReady = true;
-                alertDialog.dismiss();
+                if (mergedSource != null) {
+                    player.prepare(mergedSource, false, true);
+                    alertDialog.dismiss();
+                } else {
+                    player.prepare(videoSource, false, true);
+                    alertDialog.dismiss();
+                }
             }
         });
 
@@ -393,6 +396,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                player.setPlayWhenReady(true);
                 playWhenReady = true;
                 alertDialog.dismiss();
             }
@@ -607,6 +611,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                     new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
             trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
             eventLogger = new EventLogger(trackSelector);
+            playWhenReady = true;
 
             DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(playerView.getContext());
 
