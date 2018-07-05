@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 showSelectedSubtitle();
-                playWhenReady = false;
+                player.setPlayWhenReady(false);
             }
         });
 
@@ -359,6 +359,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                     player.prepare(videoSource, false, true);
                     alertDialog.dismiss();
                 }
+                player.setPlayWhenReady(true);
             }
         });
 
@@ -366,7 +367,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 showSubsSettingsDialog();
-                playWhenReady = false;
                 alertDialog.dismiss();
             }
         });
@@ -396,8 +396,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // play when the ok button of dialog is clicked
                 player.setPlayWhenReady(true);
-                playWhenReady = true;
                 alertDialog.dismiss();
             }
         });
@@ -611,14 +611,13 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                     new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
             trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
             eventLogger = new EventLogger(trackSelector);
-            playWhenReady = true;
 
             DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(playerView.getContext());
 
             player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
             player.addListener(new PlayerEventListener());
             player.addListener(eventLogger);
-            player.setPlayWhenReady(playWhenReady);
+            player.setPlayWhenReady(true);
             playerView.setPlayer(player);
 
             // Build the subtitle mediasource
@@ -682,7 +681,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
     private void releasePlayers() {
         if (player != null) {
-            playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
         }
