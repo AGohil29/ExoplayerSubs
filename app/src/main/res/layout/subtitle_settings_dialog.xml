@@ -64,8 +64,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_first"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style"
+            android:src="@drawable/ic_text_first" />
 
         <ImageView
             android:id="@+id/subs_size_2"
@@ -73,8 +73,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_second"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style"
+            android:src="@drawable/ic_text_second" />
 
         <ImageView
             android:id="@+id/subs_size_3"
@@ -82,8 +82,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_third"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style_selected"
+            android:src="@drawable/ic_text_third" />
 
         <ImageView
             android:id="@+id/subs_size_4"
@@ -91,8 +91,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_four"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style"
+            android:src="@drawable/ic_text_four" />
 
         <ImageView
             android:id="@+id/subs_size_5"
@@ -100,8 +100,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_five"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style"
+            android:src="@drawable/ic_text_five" />
 
     </LinearLayout>
 
@@ -124,9 +124,9 @@
             android:id="@+id/second_dialog_format"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
             android:layout_weight="1"
-            android:layout_gravity="center"
             android:background="#696969"
             android:padding="2dp"
             android:text="Format"
@@ -139,8 +139,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_black_bg"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style_selected"
+            android:src="@drawable/ic_text_black_bg" />
 
         <ImageView
             android:id="@+id/format_light_grey"
@@ -148,8 +148,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_white_no_bg"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style"
+            android:src="@drawable/ic_text_white_no_bg" />
 
         <ImageView
             android:id="@+id/format_transparent"
@@ -157,8 +157,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_yellow"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style"
+            android:src="@drawable/ic_text_yellow" />
 
         <ImageView
             android:id="@+id/format_white"
@@ -166,8 +166,8 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:src="@drawable/ic_text_black_no_bg"
-            android:background="@drawable/border_style"/>
+            android:background="@drawable/border_style"
+            android:src="@drawable/ic_text_black_no_bg" />
 
     </LinearLayout>
 
@@ -182,13 +182,35 @@
         android:id="@+id/subtitle_settings_dialog_btnOk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#696969"
         android:layout_margin="4dp"
+        android:background="#696969"
         android:text="OK"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linear_layout_format" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@+id/subtitle_settings_dialog_btnOk" />
+
+    <TextView
+        android:id="@+id/sample_subtitle_text"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:padding="2dp"
+        android:gravity="center"
+        android:text="This is a sample Subtitle text"
+        android:textAlignment="center"
+        android:textColor="@color/colorWhite"
+        android:textSize="13sp"
+        android:background="@color/colorBlack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view3" />
 
 
 </android.support.constraint.ConstraintLayout>

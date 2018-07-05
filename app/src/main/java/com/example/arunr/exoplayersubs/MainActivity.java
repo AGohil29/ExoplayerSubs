@@ -278,6 +278,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
         alertDialog.getWindow().setAttributes(layoutParams);
 
+        // to prevent dialog box from getting dismissed on outside touch
+        alertDialog.setCanceledOnTouchOutside(false);
+
         alertDialog.show();
 
         Button subsSettingBtn, btnOk;
@@ -380,10 +383,15 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         builder.setView(view);
 
         final AlertDialog alertDialog = builder.create();
+
+        // to prevent dialog box from getting dismissed on outside touch
+        alertDialog.setCanceledOnTouchOutside(false);
+
         alertDialog.show();
 
         ImageButton btnBack = view.findViewById(R.id.btn_back);
         Button btnOk = view.findViewById(R.id.subtitle_settings_dialog_btnOk);
+        final TextView sampleSubtitleText = view.findViewById(R.id.sample_subtitle_text);
 
         // show the 1st dialog again on back pressed
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -419,6 +427,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect the remaining subsSize
                 ImageView[] subSizesToDeselect = {subsSize2, subsSize3, subsSize4, subsSize5};
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
+                // change the sample subtitle text
+                sampleSubtitleText.setTextSize(11f);
 
             }
         });
@@ -432,6 +442,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect the remaining subsSize
                 ImageView[] subSizesToDeselect = {subsSize1, subsSize3, subsSize4, subsSize5};
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
+                // change the sample subtitle text
+                sampleSubtitleText.setTextSize(12f);
             }
         });
 
@@ -444,6 +456,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect the remaining subsSize
                 ImageView[] subSizesToDeselect = {subsSize1, subsSize2, subsSize4, subsSize5};
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
+                // change the sample subtitle text
+                sampleSubtitleText.setTextSize(13f);
 
             }
         });
@@ -457,6 +471,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect the remaining subsSize
                 ImageView[] subSizesToDeselect = {subsSize1, subsSize2, subsSize3, subsSize5};
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
+                // change the sample subtitle text
+                sampleSubtitleText.setTextSize(14f);
 
             }
         });
@@ -470,6 +486,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect the remaining subsSize
                 ImageView[] subSizesToDeselect = {subsSize1, subsSize2, subsSize3, subsSize4};
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
+                // change the sample subtitle text
+                sampleSubtitleText.setTextSize(15f);
 
             }
         });
@@ -493,6 +511,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect remaining subtitle format
                 ImageView subtileFormats[] = {subsGrayBackground, subsTransparentBackground, subsWhiteBackground};
                 deselectOtherSubtitleFormat(subtileFormats);
+                // set the background and font color of sample subtitle text
+                sampleSubtitleText.setBackgroundColor(getResources().getColor(R.color.colorBlack));
+                sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorWhite));
 
             }
         });
@@ -510,6 +531,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect remaining subtitle format
                 ImageView subtileFormats[] = {subsBlackBackground, subsTransparentBackground, subsWhiteBackground};
                 deselectOtherSubtitleFormat(subtileFormats);
+                // set the background and font color of sample subtitle text
+                sampleSubtitleText.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorWhite));
 
             }
         });
@@ -527,6 +551,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect remaining subtitle format
                 ImageView subtileFormats[] = {subsGrayBackground, subsBlackBackground, subsWhiteBackground};
                 deselectOtherSubtitleFormat(subtileFormats);
+                // set the background and font color of sample subtitle text
+                sampleSubtitleText.setBackgroundColor(Color.parseColor("#696969"));
+                sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorYellow));
 
             }
         });
@@ -544,6 +571,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // deselect remaining subtitle format
                 ImageView subtileFormats[] = {subsGrayBackground, subsTransparentBackground, subsBlackBackground};
                 deselectOtherSubtitleFormat(subtileFormats);
+                // set the background and font color of sample subtitle text
+                sampleSubtitleText.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorBlack));
 
             }
         });
