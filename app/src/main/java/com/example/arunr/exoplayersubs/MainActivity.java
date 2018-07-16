@@ -123,6 +123,12 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private ImageView subtitleBtnOn;
     private ImageView subtitleBtnOff;
 
+    public static final String SHARED_PREF_NAME = "my_pref";
+    public static final String SELECTED_SUBTITLE = "subtitleName";
+    public static final String SELECTED_MEDIASOURCE = "selectedMediasource";
+
+    private int lastSubtitleSelected;
+
     public void showSubtitle(boolean show) {
         if (playerView != null && playerView.getSubtitleView() != null)
             if (show) {
@@ -149,6 +155,17 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         subtitleBtnOn = findViewById(R.id.subs_on);
         subtitleBtnOff = findViewById(R.id.subs_off);
 
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        int subsSelected = sharedPreferences.getInt(SELECTED_SUBTITLE, 0);
+
+        lastSubtitlePref(subsSelected);
+
+        // Last subtitle selected which is saved in sharedPreference
+        /*SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
+        lastSubtitleSelected = sharedPreferences.getInt(SELECTED_MEDIASOURCE, 0);
+
+        lastSubtitlePref(lastSubtitleSelected);*/
+
         // settings btn include multiple subtitle settings
         subtitleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,9 +174,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 player.setPlayWhenReady(false);
             }
         });
-
-        initializePlayer();
-        showSubtitle(false);
         //requestFullScreenIfLandscape();
 
         //Todo save the player state when resumed again
@@ -312,14 +326,17 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                     ));
             }
         }*/
+
         subsAdapter = new SubtitleAdapter(subtitleData, this);
         recyclerView.setAdapter(subsAdapter);
         subsAdapter.notifyDataSetChanged();
         subsAdapter.setOnItemClickListener(new SubtitleAdapter.onRecyclerViewItemClickListener() {
             @Override
-            public void onItemClickListener(View view, int position) {
+            public void onItemClickListener(RecyclerView.ViewHolder holder, int position) {
                 //Completed if view is clicked its related imageview is displayed
                 // prepare the player when ok button is clicked
+                // Store value in sharedpreference for mediasource
+
                 if (position == 0) {
                     initializePlayer();
                     // you can pass single or multiple sources but not null
@@ -359,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                     player.prepare(mergedSource, false, true);
                     alertDialog.dismiss();
                 } else {
-                    player.prepare(videoSource, false, true);
+                    initializePlayer();
                     alertDialog.dismiss();
                 }
                 player.setPlayWhenReady(true);
@@ -532,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 ImageView subtileFormats[] = {subsBlackBackground, subsTransparentBackground, subsWhiteBackground};
                 deselectOtherSubtitleFormat(subtileFormats);
                 // set the background and font color of sample subtitle text
-                sampleSubtitleText.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                sampleSubtitleText.setBackgroundColor(Color.parseColor("#696969"));
                 sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorWhite));
 
             }
@@ -572,7 +589,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 ImageView subtileFormats[] = {subsGrayBackground, subsTransparentBackground, subsBlackBackground};
                 deselectOtherSubtitleFormat(subtileFormats);
                 // set the background and font color of sample subtitle text
-                sampleSubtitleText.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                sampleSubtitleText.setBackgroundColor(Color.parseColor("#696969"));
                 sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorBlack));
 
             }
@@ -586,6 +603,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             initFullscreenDialog();
             initFullscreenButton();
             initializePlayer();
+
+            lastSubtitlePref(lastSubtitleSelected);
         }
     }
 
@@ -596,6 +615,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             initFullscreenDialog();
             initFullscreenButton();
             initializePlayer();
+
+            lastSubtitlePref(lastSubtitleSelected);
         }
     }
 
@@ -632,6 +653,48 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     public void onCues(List<Cue> cues) {
         if (subtitleView != null) {
             subtitleView.onCues(cues);
+        }
+    }
+
+    private void lastSubtitlePref(int lastSubtitleSelected) {
+        // plays the player with the last with users preferred subtitle
+        switch (lastSubtitleSelected) {
+            case 0:
+                initializePlayer();
+                // you can pass single or multiple sources but not null
+                // if null is passed it crashes
+                mergedSource = new MergingMediaSource(videoSource);
+                player.prepare(mergedSource, false, true);
+                showSubtitle(false);
+                break;
+
+            case 1:
+                initializePlayer();
+                MediaSource subtitleSourceEng = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt"),
+                        dataSourceFactory, format, C.TIME_UNSET);
+                mergedSource = new MergingMediaSource(videoSource, subtitleSourceEng);
+                player.prepare(mergedSource, false, true);
+                showSubtitle(true);
+                break;
+
+            case 2:
+                initializePlayer();
+                MediaSource subtitleSourceSp = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-es.srt"),
+                        dataSourceFactory, format, C.TIME_UNSET);
+                mergedSource = new MergingMediaSource(videoSource, subtitleSourceSp);
+                player.prepare(mergedSource, false, true);
+                showSubtitle(true);
+                break;
+
+            case 3:
+                initializePlayer();
+                MediaSource subtitleSourceFr = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-fr-Goofy.srt"),
+                        dataSourceFactory, format, C.TIME_UNSET);
+
+                mergedSource = new MergingMediaSource(videoSource, subtitleSourceFr);
+                player.prepare(mergedSource, false, true);
+                showSubtitle(true);
+                break;
         }
     }
 

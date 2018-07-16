@@ -28,9 +28,16 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
     private List<SubtitleList> subtitles;
     private Context context;
+    public SharedPreferences sharedPreferences;
+    public SharedPreferences.Editor editor;
+    // so that the first item in the recycler view is selected
     public int row_index = 0;
     private onRecyclerViewItemClickListener mItemClickListener;
     private int lastCheckedPosition = -1;
+
+    public static final String SHARED_PREF_NAME = "my_pref";
+    public static final String SELECTED_SUBTITLE = "subtitleName";
+    public static final String SELECTED_MEDIASOURCE = "selectedMediasource";
 
     public SubtitleAdapter() {
 
@@ -47,7 +54,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     }
 
     public interface onRecyclerViewItemClickListener {
-        void onItemClickListener(View view, int position);
+        void onItemClickListener(RecyclerView.ViewHolder holder, int position);
     }
 
     @NonNull
@@ -55,6 +62,10 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
     public SubtitleAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.subtitle_list_row, parent, false);
+        //Store value here
+        sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        row_index = sharedPreferences.getInt(SELECTED_SUBTITLE, 0);
+
         return new MyViewHolder(itemView);
     }
 
@@ -68,9 +79,14 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             public void onClick(View view, int position) {
                 row_index = position; // set row index to selected position
                 Common.currentItem = subtitles.get(position); // set current item is item selected
-                notifyDataSetChanged();
             }
         });
+
+        // Store value in sharedpreference
+        sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        editor = sharedPreferences.edit();
+        editor.putInt(SELECTED_SUBTITLE, row_index).apply();
 
         // highlight color of selected view and display the image
         if (row_index == position) {
@@ -83,6 +99,10 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             holder.itemView.setBackgroundColor(Color.parseColor("#696969"));
             //hide the image when another item is clicked
             holder.imageView.setVisibility(View.GONE);
+        }
+
+        if (mItemClickListener != null) {
+            mItemClickListener.onItemClickListener(holder, row_index);
         }
 
         // get data from share preference about selected Subtitle
@@ -117,10 +137,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
 
         @Override
         public void onClick(View view) {
-            if (mItemClickListener != null) {
-                mItemClickListener.onItemClickListener(view, getAdapterPosition());
-            }
-            // Todo -- change your image view visibility here
+
             itemClickListener.onClick(view, getAdapterPosition());
 
             int copyOfLastCheckedPosition = lastCheckedPosition;
@@ -128,16 +145,6 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.MyView
             notifyItemChanged(copyOfLastCheckedPosition);
             notifyItemChanged(lastCheckedPosition);
             notifyDataSetChanged();
-            // checkbox is checked and unchecked
-            /*if (subsSelected.isChecked()) {
-                subsSelected.setChecked(false);
-            } else {
-                subsSelected.setChecked(true);
-            }*/
-
-            // Todo Create share preference
-
-            // Add data to preference
 
         }
     }
