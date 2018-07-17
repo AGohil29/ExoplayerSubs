@@ -82,7 +82,7 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style_selected"
+            android:background="@drawable/border_style"
             android:src="@drawable/ic_text_third" />
 
         <ImageView
@@ -139,7 +139,7 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/border_style_selected"
+            android:background="@drawable/border_style"
             android:src="@drawable/ic_text_black_bg" />
 
         <ImageView

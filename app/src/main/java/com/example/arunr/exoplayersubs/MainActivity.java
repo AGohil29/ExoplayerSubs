@@ -77,6 +77,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements TextRenderer.Output {
 
@@ -117,15 +118,25 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private boolean playWhenReady;
 
     private SubtitleList subtitles;
-    private SharedPreferences prefs;
+    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private FrameLayout subtitleBtn;
     private ImageView subtitleBtnOn;
     private ImageView subtitleBtnOff;
 
+    // string values to be used as keys in sharedPreference
     public static final String SHARED_PREF_NAME = "my_pref";
     public static final String SELECTED_SUBTITLE = "subtitleName";
-    public static final String SELECTED_MEDIASOURCE = "selectedMediasource";
+    public static final String SUBTITLE_SIZE = "subtitleSize";
+    public static final String SUBTITLE_FORMAT = "subtitleFormat";
+    // values of subtitle background in int
+    public static final int SUBTITLE_BACKGROUND_BLACK = 1;
+    public static final int SUBTITLE_BACKGROUND_GRAY = 2;
+    public static final int SUBTITLE_BACKGROUND_TRANSPARENT = 3;
+    public static final int SUBTITLE_BACKGROUND_WHITE = 4;
+
+    private int subsSizeInt;
+    private int subsFormat;
 
     private int lastSubtitleSelected;
 
@@ -155,16 +166,18 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         subtitleBtnOn = findViewById(R.id.subs_on);
         subtitleBtnOff = findViewById(R.id.subs_off);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        // to save the last selected subtitle
+        sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         int subsSelected = sharedPreferences.getInt(SELECTED_SUBTITLE, 0);
-
         lastSubtitlePref(subsSelected);
 
-        // Last subtitle selected which is saved in sharedPreference
-        /*SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
-        lastSubtitleSelected = sharedPreferences.getInt(SELECTED_MEDIASOURCE, 0);
+        // Todo - save the last subtitle size selected
+        subsSizeInt = sharedPreferences.getInt(SUBTITLE_SIZE, 13);
+        lastSubtitleSizePref(subsSizeInt);
 
-        lastSubtitlePref(lastSubtitleSelected);*/
+        // Todo - save the last subtitle format selected
+        subsFormat = sharedPreferences.getInt(SUBTITLE_FORMAT, 1);
+        lastSubtitleFormatPref(subsFormat);
 
         // settings btn include multiple subtitle settings
         subtitleBtn.setOnClickListener(new View.OnClickListener() {
@@ -387,12 +400,18 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 showSubsSettingsDialog();
+                subsSizeInt = sharedPreferences.getInt(SUBTITLE_SIZE, 13);
+                lastSubtitleSizePref(subsSizeInt);
+                // save the last subtitle format selected
+                subsFormat = sharedPreferences.getInt(SUBTITLE_FORMAT, 1);
+                lastSubtitleFormatPref(subsFormat);
+
                 alertDialog.dismiss();
             }
         });
     }
 
-    private void showSubsSettingsDialog() {
+    public void showSubsSettingsDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
 
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
@@ -426,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 alertDialog.dismiss();
             }
         });
-        //1. Todo show a sample text of selected subtitle size and format
+        //1. Done show a sample text of selected subtitle size and format
         //2. Completed selects only one size and one format
         // setting subtitles text size
         subsSize1 = view.findViewById(R.id.subs_size_1);
@@ -434,6 +453,10 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         subsSize3 = view.findViewById(R.id.subs_size_3);
         subsSize4 = view.findViewById(R.id.subs_size_4);
         subsSize5 = view.findViewById(R.id.subs_size_5);
+
+        // create your sharedpreferences
+        sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, 0);
+        editor = sharedPreferences.edit();
 
         subsSize1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -447,6 +470,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // change the sample subtitle text
                 sampleSubtitleText.setTextSize(11f);
 
+                // save some value in sharedpreference
+                editor.putInt(SUBTITLE_SIZE, 11).apply();
             }
         });
 
@@ -461,6 +486,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
                 // change the sample subtitle text
                 sampleSubtitleText.setTextSize(12f);
+
+                // save some value in sharedpreference
+                editor.putInt(SUBTITLE_SIZE, 12).apply();
             }
         });
 
@@ -475,6 +503,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
                 // change the sample subtitle text
                 sampleSubtitleText.setTextSize(13f);
+
+                // save some value in sharedpreference
+                editor.putInt(SUBTITLE_SIZE, 13).apply();
 
             }
         });
@@ -491,6 +522,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // change the sample subtitle text
                 sampleSubtitleText.setTextSize(14f);
 
+                // save some value in sharedpreference
+                editor.putInt(SUBTITLE_SIZE, 14).apply();
+
             }
         });
 
@@ -505,6 +539,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 subsSizeDeselectRemainingSizes(subSizesToDeselect);
                 // change the sample subtitle text
                 sampleSubtitleText.setTextSize(15f);
+
+                // save some value in sharedpreference
+                editor.putInt(SUBTITLE_SIZE, 15).apply();
 
             }
         });
@@ -532,6 +569,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 sampleSubtitleText.setBackgroundColor(getResources().getColor(R.color.colorBlack));
                 sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorWhite));
 
+                // save value of subtitle background
+                editor.putInt(SUBTITLE_FORMAT, SUBTITLE_BACKGROUND_BLACK).apply();
+
             }
         });
 
@@ -551,6 +591,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // set the background and font color of sample subtitle text
                 sampleSubtitleText.setBackgroundColor(Color.parseColor("#696969"));
                 sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                // save value of subtitle background
+                editor.putInt(SUBTITLE_FORMAT, SUBTITLE_BACKGROUND_GRAY).apply();
 
             }
         });
@@ -572,6 +615,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 sampleSubtitleText.setBackgroundColor(Color.parseColor("#696969"));
                 sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorYellow));
 
+                // save value of subtitle background
+                editor.putInt(SUBTITLE_FORMAT, SUBTITLE_BACKGROUND_TRANSPARENT).apply();
+
             }
         });
 
@@ -591,6 +637,9 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 // set the background and font color of sample subtitle text
                 sampleSubtitleText.setBackgroundColor(Color.parseColor("#696969"));
                 sampleSubtitleText.setTextColor(getResources().getColor(R.color.colorBlack));
+
+                // save value of subtitle background
+                editor.putInt(SUBTITLE_FORMAT, SUBTITLE_BACKGROUND_WHITE).apply();
 
             }
         });
@@ -695,6 +744,111 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 player.prepare(mergedSource, false, true);
                 showSubtitle(true);
                 break;
+        }
+    }
+
+    // method to change and highlight the size of subtitle as per saved preference
+    private void lastSubtitleSizePref(int subsSizeInt) {
+        if (subsSizeInt == 11) {
+            if (subsSize1 != null) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.8f);
+                subsSize1.setBackgroundResource(R.drawable.border_style_selected);
+                subsSize1.setSelected(true);
+            } else {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.8f);
+            }
+
+        } else if (subsSizeInt == 12) {
+            if (subsSize2 != null) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.9f);
+                subsSize2.setBackgroundResource(R.drawable.border_style_selected);
+                subsSize2.setSelected(true);
+            } else {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 0.9f);
+            }
+
+        } else if (subsSizeInt == 13) {
+            if (subsSize3 != null) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1f);
+                subsSize3.setBackgroundResource(R.drawable.border_style_selected);
+                subsSize3.setSelected(true);
+            } else {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1f);
+            }
+
+        } else if (subsSizeInt == 14) {
+            if (subsSize4 != null) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.1f);
+                subsSize4.setBackgroundResource(R.drawable.border_style_selected);
+                subsSize4.setSelected(true);
+            } else {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.1f);
+            }
+
+        } else {
+            if (subsSize5 != null) {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.2f);
+                subsSize5.setBackgroundResource(R.drawable.border_style_selected);
+                subsSize5.setSelected(true);
+            } else {
+                playerView.getSubtitleView().setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.2f);
+            }
+
+        }
+    }
+
+    // method for changing the subtitle format as per saved preference
+    private void lastSubtitleFormatPref(int subsFormat) {
+        if (subsFormat == SUBTITLE_BACKGROUND_BLACK) {
+            if (subsBlackBackground != null) {
+                captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.BLACK, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+                subtitleFormatSelected(subsBlackBackground);
+            } else {
+                captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.BLACK, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
+
+        } else if (subsFormat == SUBTITLE_BACKGROUND_GRAY) {
+            if (subsGrayBackground != null) {
+                captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.LTGRAY, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+                // to change the border on selection
+                subtitleFormatSelected(subsGrayBackground);
+            } else {
+                captionStyleCompat = new CaptionStyleCompat(Color.WHITE, Color.LTGRAY, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
+
+        } else if (subsFormat == SUBTITLE_BACKGROUND_TRANSPARENT) {
+            if (subsTransparentBackground != null) {
+                captionStyleCompat = new CaptionStyleCompat(Color.YELLOW, Color.TRANSPARENT, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+                // to change the border on selection
+                subtitleFormatSelected(subsTransparentBackground);
+            } else {
+                captionStyleCompat = new CaptionStyleCompat(Color.YELLOW, Color.TRANSPARENT, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
+
+        } else {
+            if (subsWhiteBackground != null) {
+                captionStyleCompat = new CaptionStyleCompat(Color.BLACK, Color.WHITE, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+                // to change the border on selection
+                subtitleFormatSelected(subsWhiteBackground);
+            } else {
+                captionStyleCompat = new CaptionStyleCompat(Color.BLACK, Color.WHITE, Color.TRANSPARENT,
+                        CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.TRANSPARENT, null);
+                playerView.getSubtitleView().setStyle(captionStyleCompat);
+            }
         }
     }
 
