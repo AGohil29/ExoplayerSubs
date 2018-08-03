@@ -155,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
     // save the name of the user
     private String username;
 
+    private LinearLayout forwardBtnView;
+    private LinearLayout rewindBtnView;
+
     //Gesture listener
     private GestureDetectorCompat mDetector;
     private static final String DEBUG_TAG = "Gestures";
@@ -183,6 +186,8 @@ public class MainActivity extends AppCompatActivity {
 
         playerView = findViewById(R.id.video_view);
         controlView = findViewById(R.id.exo_controller);
+        forwardBtnView = findViewById(R.id.forwardBtnView);
+        rewindBtnView = findViewById(R.id.rewBtnView);
 
         // Get the view from the playerview
         View videoView = playerView.getVideoSurfaceView();
@@ -195,6 +200,16 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "onDoubleTap", Toast.LENGTH_SHORT).show();
                     // show the control view
                     controlView.show();
+                    Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            forwardBtnView.setVisibility(View.VISIBLE);
+                        }
+                    };
+                    handler.postDelayed(runnable, 500);
+                    // forward the player by 10 seconds on double tap
+
                     return super.onDoubleTap(e);
                 }
                 @Override
