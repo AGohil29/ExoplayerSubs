@@ -1,5 +1,6 @@
 package com.example.arunr.exoplayersubs;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,8 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,17 +26,25 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckedTextView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +76,7 @@ import com.google.android.exoplayer2.trackselection.RandomTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -79,13 +91,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements TextRenderer.Output {
+public class MainActivity extends AppCompatActivity {
 
     private static final int PICK_FILE_REQUEST_CODE = 2;
 
     private PlayerView playerView;
     private SimpleExoPlayer player;
     private SubtitleView subtitleView;
+    private PlayerControlView controlView;
 
     private DefaultTrackSelector trackSelector;
     private DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -123,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     private FrameLayout subtitleBtn;
     private ImageView subtitleBtnOn;
     private ImageView subtitleBtnOff;
+    private AlertDialog alertDialog;
 
     // string values to be used as keys in sharedPreference
     public static final String SHARED_PREF_NAME = "my_pref";
@@ -135,11 +149,20 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
     public static final int SUBTITLE_BACKGROUND_TRANSPARENT = 3;
     public static final int SUBTITLE_BACKGROUND_WHITE = 4;
 
+    private int subsSelected;
     private int subsSizeInt;
     private int subsFormat;
+    // save the name of the user
+    private String username;
 
+    //Gesture listener
+    private GestureDetectorCompat mDetector;
+    private static final String DEBUG_TAG = "Gestures";
     private int lastSubtitleSelected;
 
+    private GestureDetector mGestureDetector;
+
+    // method to show or hide subtitles
     public void showSubtitle(boolean show) {
         if (playerView != null && playerView.getSubtitleView() != null)
             if (show) {
@@ -159,6 +182,59 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         setContentView(R.layout.activity_main);
 
         playerView = findViewById(R.id.video_view);
+        controlView = findViewById(R.id.exo_controller);
+
+        // Get the view from the playerview
+        View videoView = playerView.getVideoSurfaceView();
+
+        // Set touch listener on the view
+        videoView.setOnTouchListener(new View.OnTouchListener() {
+            private GestureDetector gestureDetector = new GestureDetector(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    Toast.makeText(getApplicationContext(), "onDoubleTap", Toast.LENGTH_SHORT).show();
+                    // show the control view
+                    controlView.show();
+                    return super.onDoubleTap(e);
+                }
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent event) {
+                    Toast.makeText(getApplicationContext(), "onSingleTap", Toast.LENGTH_SHORT).show();
+                    if (controlView.isVisible()) {
+                        controlView.show();
+                    } else {
+                        controlView.hide();
+                    }
+                    return false;
+                }
+            });
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                gestureDetector.onTouchEvent(motionEvent);
+
+                /*int maskedAction = motionEvent.getActionMasked();
+                switch (maskedAction) {
+                    case MotionEvent.ACTION_DOWN:
+                        Toast.makeText(getApplicationContext(), "Action Down: ", Toast.LENGTH_SHORT).show();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        Toast.makeText(getApplicationContext(), "Action Move: ", Toast.LENGTH_SHORT).show();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        Toast.makeText(getApplicationContext(), "Action up: ", Toast.LENGTH_SHORT).show();
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        Toast.makeText(getApplicationContext(), "Action cancel: ", Toast.LENGTH_SHORT).show();
+                        break;
+                }*/
+                // if false will only show toast message for ACTION_DOWN
+                // if true then will show toast message for all cases
+                return true;
+            }
+
+        });
+
         //playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);
         // for toggling subtitles
         subtitleView = findViewById(R.id.exo_subtitles);
@@ -168,14 +244,14 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
         // to save the last selected subtitle
         sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        int subsSelected = sharedPreferences.getInt(SELECTED_SUBTITLE, 0);
+        subsSelected = sharedPreferences.getInt(SELECTED_SUBTITLE, 0);
         lastSubtitlePref(subsSelected);
 
-        // Todo - save the last subtitle size selected
+        // Done - save the last subtitle size selected
         subsSizeInt = sharedPreferences.getInt(SUBTITLE_SIZE, 13);
         lastSubtitleSizePref(subsSizeInt);
 
-        // Todo - save the last subtitle format selected
+        // Done - save the last subtitle format selected
         subsFormat = sharedPreferences.getInt(SUBTITLE_FORMAT, 1);
         lastSubtitleFormatPref(subsFormat);
 
@@ -187,14 +263,28 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 player.setPlayWhenReady(false);
             }
         });
+
+        /*CustomGestureListener customGestureListener = new CustomGestureListener();
+        mGestureDetector = new GestureDetector(this, customGestureListener);
+        mGestureDetector.setOnDoubleTapListener(customGestureListener);*/
         //requestFullScreenIfLandscape();
 
         //Todo save the player state when resumed again
         initFullscreenDialog();
         initFullscreenButton();
+
     }
 
+    // Todo - apply onDoubleTap event
+    /*@Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mGestureDetector.onTouchEvent(event);
+        Toast.makeText(getApplicationContext(), "onTouchEvent: ", Toast.LENGTH_SHORT).show();
+        return super.onTouchEvent(event);
+    }*/
+
     // methods for playing the video on fullscreen
+
     private void initFullscreenDialog() {
 
         mFullScreenDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
@@ -273,20 +363,6 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         }
     }*/
 
-    // method to toggle subtitles on and off
-   /* public void onClick(View view) {
-        if (playerView != null && subtitleBtnOn.getVisibility() == View.GONE) {
-            initializePlayer();
-            MediaSource subtitleSourceEng = new SingleSampleMediaSource(Uri.parse("https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt"),
-                    dataSourceFactory, format, C.TIME_UNSET);
-            mergedSource = new MergingMediaSource(videoSource, subtitleSourceEng);
-            player.prepare(mergedSource, false, false);
-            showSubtitle(true);
-        } else {
-            showSubtitle(false);
-        }
-    }*/
-
     private void showSelectedSubtitle() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
 
@@ -294,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         View view = inflater.inflate(R.layout.track_selection_dialog, null);
         builder.setView(view);
 
-        final AlertDialog alertDialog = builder.create();
+        alertDialog = builder.create();
 
         // set the height and width of dialog
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
@@ -310,6 +386,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
         alertDialog.show();
 
+        //local variables
         Button subsSettingBtn, btnOk;
         subsSettingBtn = view.findViewById(R.id.subtitle_settings);
         btnOk = view.findViewById(R.id.btnOk);
@@ -329,6 +406,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 this.subtitleData.add(subtitles);
             }
         }
+
+
         // adds subs data only once
         /*if (subtitleData != null && subtitleData.size() < SubtitleData.languages.length) {
             // list of different subtitle languages
@@ -400,12 +479,29 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
             @Override
             public void onClick(View view) {
                 showSubsSettingsDialog();
-                subsSizeInt = sharedPreferences.getInt(SUBTITLE_SIZE, 13);
-                lastSubtitleSizePref(subsSizeInt);
-                // save the last subtitle format selected
-                subsFormat = sharedPreferences.getInt(SUBTITLE_FORMAT, 1);
-                lastSubtitleFormatPref(subsFormat);
 
+                //Set the selected subtitles size and format it any language for subtitles is selected
+                subsSelected = sharedPreferences.getInt(SELECTED_SUBTITLE, 0);
+                if (subsSelected != 0) {
+                    subsSizeInt = sharedPreferences.getInt(SUBTITLE_SIZE, 13);
+                    lastSubtitleSizePref(subsSizeInt);
+                    // save the last subtitle format selected
+                    subsFormat = sharedPreferences.getInt(SUBTITLE_FORMAT, 1);
+                    lastSubtitleFormatPref(subsFormat);
+                } else {
+                    // if none is selected nothing is selected in subtitles settings dialog
+                    ImageView subsSizeToDeselect[] = {subsSize1, subsSize2, subsSize3, subsSize4, subsSize5};
+                    ImageView subtitleFormat[] = {subsBlackBackground, subsGrayBackground, subsTransparentBackground,
+                            subsWhiteBackground};
+                    for (ImageView aSubsSizeToDeselect : subsSizeToDeselect) {
+                        aSubsSizeToDeselect.setBackgroundResource(R.drawable.border_style);
+                        aSubsSizeToDeselect.setSelected(false);
+                    }
+                    for (ImageView aSubtitleFormat : subtitleFormat) {
+                        aSubtitleFormat.setBackgroundResource(R.drawable.border_style);
+                        aSubtitleFormat.setSelected(false);
+                    }
+                }
                 alertDialog.dismiss();
             }
         });
@@ -425,8 +521,11 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
 
         alertDialog.show();
 
+        // local variable for Subtitle settings dialog
         ImageButton btnBack = view.findViewById(R.id.btn_back);
         Button btnOk = view.findViewById(R.id.subtitle_settings_dialog_btnOk);
+        Button btnEnterUsername = view.findViewById(R.id.subtitle_settings_dialog_btnUsername);
+        TextView enterUserName = view.findViewById(R.id.enter_user_name);
         final TextView sampleSubtitleText = view.findViewById(R.id.sample_subtitle_text);
 
         // show the 1st dialog again on back pressed
@@ -437,6 +536,8 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 showSelectedSubtitle();
             }
         });
+
+        // Dismiss the dialog and play the video
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -445,6 +546,21 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
                 alertDialog.dismiss();
             }
         });
+
+        // open the user credential dialog, pause the video and dismiss the dialog
+        btnEnterUsername.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                player.setPlayWhenReady(false);
+                userNameDialog();
+                alertDialog.dismiss();
+            }
+        });
+
+        // retrieve the value of username from userNameDialog and set the text to enterUserName textView
+        username = sharedPreferences.getString("username", "Enter User Name");
+        enterUserName.setText(username);
+
         //1. Done show a sample text of selected subtitle size and format
         //2. Completed selects only one size and one format
         // setting subtitles text size
@@ -645,6 +761,40 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         });
     }
 
+    // Dialog that accepts a users name and displays it in subs settings dialog
+    public void userNameDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
+
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        View view = inflater.inflate(R.layout.username_dialog, null);
+        builder.setView(view);
+
+        final AlertDialog alertDialog = builder.create();
+
+        // to prevent dialog box from getting dismissed on outside touch
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        alertDialog.show();
+
+        Button btnOk = view.findViewById(R.id.username_btnOK);
+        final EditText editText_username = view.findViewById(R.id.editText_username);
+        EditText usernameEmail = view.findViewById(R.id.editText_username_email);
+
+        // save the username from editText
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // play when the ok button of dialog is clicked
+                String usernameET = editText_username.getText().toString();
+                editor = sharedPreferences.edit();
+                editor.putString("username", usernameET).apply();
+                showSubsSettingsDialog();
+                alertDialog.dismiss();
+            }
+        });
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -698,13 +848,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         player.removeListener(null);
     }
 
-    @Override
-    public void onCues(List<Cue> cues) {
-        if (subtitleView != null) {
-            subtitleView.onCues(cues);
-        }
-    }
-
+    // method to save load the last selected subtitles
     private void lastSubtitlePref(int lastSubtitleSelected) {
         // plays the player with the last with users preferred subtitle
         switch (lastSubtitleSelected) {
@@ -933,6 +1077,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         }
     }
 
+    // it accepts an imageview of subsize that is selected
     private void subsSizeSelected(ImageView subsSize) {
         if (subsSize.isSelected()) {
             subsSize.setBackgroundResource(R.drawable.border_style);
@@ -943,6 +1088,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         }
     }
 
+    // it accepts an array of imageview to deselect other than the selected subsize
     private void subsSizeDeselectRemainingSizes(ImageView subsSizeToDeselect[]) {
         for (ImageView aSubsSizeToDeselect : subsSizeToDeselect) {
             aSubsSizeToDeselect.setBackgroundResource(R.drawable.border_style);
@@ -950,6 +1096,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         }
     }
 
+    // it accepts an Imageview of subsFormat that is selected
     private void subtitleFormatSelected(ImageView subtitleFormat) {
         if (subtitleFormat.isSelected()) {
             subtitleFormat.setBackgroundResource(R.drawable.border_style);
@@ -960,6 +1107,7 @@ public class MainActivity extends AppCompatActivity implements TextRenderer.Outp
         }
     }
 
+    // is accepts an array of imageview to deselect other than the selected format
     private void deselectOtherSubtitleFormat(ImageView subtitleFormat[]) {
         for (ImageView aSubtitleFormat : subtitleFormat) {
             aSubtitleFormat.setBackgroundResource(R.drawable.border_style);
